@@ -22,6 +22,7 @@ module.exports = {
   },
   plugins: ['@typescript-eslint', 'import', 'prettier'],
   rules: {
+    'camelcase': 'off',
     'class-methods-use-this': 0,
     'import/extensions': [
       'error',
@@ -30,6 +31,12 @@ module.exports = {
         ts: 'never',
         js: 'never',
       },
+    ],
+    '@typescript-eslint/no-unused-vars': [
+      'warn',
+      {
+        'argsIgnorePattern': '^_'
+      }
     ],
   },
   settings: {
