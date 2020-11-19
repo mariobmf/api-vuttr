@@ -2,27 +2,29 @@ import request from 'supertest';
 import { getRepository } from 'typeorm';
 
 import app from '../../app';
-import { testDBConnection } from '../../database';
+import createConnection, { testDBConnection } from '../../database';
 
 import User from '../../models/User';
 
 describe('Users', () => {
   beforeAll(async () => {
-    const connection = await testDBConnection.create();
+    const connection = await createConnection('testing');
+
     await connection.runMigrations();
   });
 
   afterAll(async () => {
-    await testDBConnection.close();
+    await testDBConnection.clear('testing');
+    await testDBConnection.close('testing');
   });
 
   beforeEach(async () => {
-    await testDBConnection.clear();
+    await testDBConnection.clear('testing');
   });
 
   it('Should register a new user', async () => {
-    const createUser = getRepository(User);
-    const user = createUser.create({
+    const userRepository = getRepository(User);
+    const user = userRepository.create({
       name: 'User',
       email: 'user@user.com',
       password: '12345678',
@@ -33,14 +35,16 @@ describe('Users', () => {
     expect(response.status).toBe(201);
     expect(response.body).toMatchObject({ name: user.name, email: user.email });
   });
+
   it('Should deny user registration with email already registered', async () => {
-    const createUser = getRepository(User);
-    const user = createUser.create({
+    const userRepository = getRepository(User);
+    const user = userRepository.create({
       name: 'User',
       email: 'user@user.com',
       password: '12345678',
     });
-    await request(app).post('/users').send(user);
+    await userRepository.save(user);
+
     const response = await request(app).post('/users').send(user);
 
     expect(response.status).toBe(409);
