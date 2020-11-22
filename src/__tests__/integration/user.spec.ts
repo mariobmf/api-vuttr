@@ -1,10 +1,9 @@
 import request from 'supertest';
-import { getRepository } from 'typeorm';
 
 import app from '../../app';
 import createConnection, { testDBConnection } from '../../database';
 
-import User from '../../models/User';
+import factory from '../../database/factory';
 
 describe('Users', () => {
   beforeAll(async () => {
@@ -16,6 +15,7 @@ describe('Users', () => {
   afterAll(async () => {
     await testDBConnection.clear('testing');
     await testDBConnection.close('testing');
+    await testDBConnection.close();
   });
 
   beforeEach(async () => {
@@ -23,12 +23,7 @@ describe('Users', () => {
   });
 
   it('Should register a new user', async () => {
-    const userRepository = getRepository(User);
-    const user = userRepository.create({
-      name: 'User',
-      email: 'user@user.com',
-      password: '12345678',
-    });
+    const user = await factory.makeUser();
 
     const response = await request(app).post('/users').send(user);
 
@@ -37,13 +32,7 @@ describe('Users', () => {
   });
 
   it('Should deny user registration with email already registered', async () => {
-    const userRepository = getRepository(User);
-    const user = userRepository.create({
-      name: 'User',
-      email: 'user@user.com',
-      password: '12345678',
-    });
-    await userRepository.save(user);
+    const user = await factory.createUser();
 
     const response = await request(app).post('/users').send(user);
 

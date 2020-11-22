@@ -13,9 +13,14 @@ export default async (name = 'default'): Promise<Connection> => {
     process.env.NODE_ENV === 'test'
       ? {
           name,
-          type: 'sqlite',
-          database: './src/__tests__/database.sqlite3',
-          // migrationsRun: true,
+          type: 'postgres',
+          host: '127.0.0.1',
+          port: 5432,
+          username: 'postgres',
+          password: 'docker',
+          database: 'vuttr_test',
+          // type: 'sqlite',
+          // database: './src/__tests__/database.sqlite3',
           entities: defaultOptions.entities,
           migrations: defaultOptions.migrations,
           cli: defaultOptions.cli,
@@ -29,7 +34,7 @@ export const testDBConnection = {
     return getConnection(connectionName).close();
   },
 
-  async clear(connectionName: string): Promise<void> {
+  async clear(connectionName = 'default'): Promise<void> {
     const conn = getConnection(connectionName);
     const entities = conn.entityMetadatas;
 

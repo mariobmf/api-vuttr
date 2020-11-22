@@ -1,6 +1,7 @@
 import { getRepository } from 'typeorm';
 import { compare } from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+
+import generateJwtToken from '../utils/generateJwtToken';
 
 import AppError from '../errors/AppError';
 
@@ -29,11 +30,7 @@ class CreateSessionService {
     const isAuthorized = await compare(password, user.password);
     if (!isAuthorized) throw new AppError('Incorrect password', 401);
 
-    const userId = user.id;
-    const privateKey = String(process.env.APP_SECRET);
-    const token = jwt.sign({ userId }, privateKey, {
-      expiresIn: 300, // expires in 5min
-    });
+    const token = generateJwtToken(user.id);
     return { user, token };
   }
 }
