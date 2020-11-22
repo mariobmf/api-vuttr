@@ -69,7 +69,7 @@ class ToolController {
     const deleteTool = new DeleteToolService();
 
     await deleteTool.execute({ toolId, userId });
-    return response.status(200).send('Tool successfully deleted');
+    return response.status(204).send('Tool successfully deleted');
   }
 }
 export default new ToolController();

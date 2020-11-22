@@ -21,7 +21,7 @@ describe('Tools', () => {
   });
 
   beforeEach(async () => {
-    await testDBConnection.clear();
+    await testDBConnection.clear('testing');
   });
 
   it('Should register a tool', async () => {
@@ -73,7 +73,7 @@ describe('Tools', () => {
       .delete(`/tools/${tool.id}`)
       .set('Authorization', `Bearer ${generateJwtToken(user.id)}`);
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(204);
   });
 
   it('Should not delete tool with a non-existent id', async () => {
