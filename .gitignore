@@ -5,3 +5,4 @@ build/
 tmp/
 temp/
 *.sqlite3
+yarn-error.log
